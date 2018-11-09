@@ -1,0 +1,204 @@
+/* https://medium.com/actualize-network/modern-css-explained-for-dinosaurs-5226febe3525 */
+
+/* BASIC TYPOGRAPHY */
+/* from https://github.com/oxalorg/sakura */
+
+html {
+	font-size: 62.5%;
+	font-family: serif;
+}
+body {
+	font-size: 1.8rem;
+	line-height: 1.618;
+	/* max-width: 38em; */
+	margin: auto;
+	color: #4a4a4a;
+	background-color: #f9f9f9;
+	padding: 0.5em;
+	margin-top: 4em;
+}
+@media (max-width: 684px) {
+	body {
+		font-size: 1.53rem;
+	}
+}
+@media (max-width: 382px) {
+	body {
+		font-size: 1.35rem;
+	}
+}
+h1, h2, h3, h4, h5, h6 {
+	line-height: 1.1;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: 700;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	-ms-word-break: break-all;
+	word-break: break-word;
+	-ms-hyphens: auto;
+	-moz-hyphens: auto;
+	-webkit-hyphens: auto;
+	hyphens: auto;
+}
+h1 {
+	font-size: 2.35em;
+}
+h2 {
+	font-size: 2em;
+}
+h3 {
+	font-size: 1.75em;
+}
+h4 {
+	font-size: 1.5em;
+}
+h5 {
+	font-size: 1.25em;
+}
+h6 {
+	font-size: 1em;
+}
+
+/* FLEXBOX-BASED LAYOUT */
+
+body {
+	height: calc(100vh - 5em);
+	display: flex;
+	flex-direction: column;
+}
+.contents {
+	display: flex;
+	flex: 1;
+}
+main {
+	flex: 1;
+	padding: 0 20px;
+	height: calc(100vh - 5em);
+	overflow: auto;
+}
+nav {
+	flex: 0 0 180px;
+	padding: 0 10px;
+	order: -1;
+}
+aside {
+	flex: none;
+	padding: 0 10px;
+	height: calc(100vh - 5em);
+	overflow: auto;
+}
+
+aside ul {
+	margin: 0;
+}
+
+/* FIXED HEADER */
+
+header{
+	
+	position: fixed;
+	top: 0;
+	/* right: 0; */
+	width: 100%;
+	z-index: 10000;
+	
+}
+
+header h1 {
+	margin: 0.25em 0.25em 0.25em 0;
+}
+
+.ns, .class {
+	padding-left: 0;
+}
+
+.ns li, .class li {
+	list-style-type: none;
+	padding: 0 1em 0 .5em;
+}
+
+.ns li.active, .class li.active {
+	color: #eee;
+	background-color: #4a4a4a;
+}
+
+/* ACCORDION */
+
+.section {
+	position: relative;
+	margin-bottom: 1px;
+	width: 100%;
+	/* color: #fff; */
+	overflow: hidden;
+}
+.section input {
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+.section label {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #4a4a4a;
+	color: #eee;
+	text-transform: capitalize;
+	/* font-weight: bold; */
+	/* line-height: 3; */
+	cursor: pointer;
+}
+.section-content {
+	max-height: 0;
+	overflow: hidden;
+	/* background: #1abc9c; */
+	-webkit-transition: max-height .35s;
+	-o-transition: max-height .35s;
+	transition: max-height .35s;
+}
+.section-content p {
+	margin: 1em;
+}
+/* :checked */
+.section input:checked ~ .section-content {
+	max-height: 100vh;
+}
+/* Icon */
+.section label::after {
+	position: absolute;
+	right: 0;
+	top: 0;
+	display: block;
+	width: 1em;
+	height: 1em;
+	/* line-height: 3; */
+	text-align: center;
+	-webkit-transition: all .35s;
+	-o-transition: all .35s;
+	transition: all .35s;
+}
+.section label.class::after {
+	content: 'C';
+}
+.section label.abstract::after {
+	content: 'A';
+}
+.section label.interface::after {
+	content: 'I';
+}
+.section label.struct::after {
+	content: 'S';
+}
+/*
+.section input[type=checkbox] + label::after {
+	content: "+";
+}
+.section input[type=radio] + label::after {
+	content: "\25BC";
+}
+.section input[type=checkbox]:checked + label::after {
+	transform: rotate(315deg);
+}
+.section input[type=radio]:checked + label::after {
+	transform: rotateX(180deg);
+}
+*/

@@ -1,0 +1,116 @@
+<!--
+
+	Existing solutions:
+
+	https://valadoc.org/libnm-glib/NM.html - lacks structs and interfaces
+	https://lazka.github.io/pgi-docs/index.html#NM-1.0/classes/Client.html - looks like best one, but navigation sucks
+	https://www.roojs.com/seed/gir-1.2-gtk-3.0/seed/NMClient.html - outdated
+	http://devdocs.baznga.org/nmclient10~1.0_api/ - unusable
+	https://developer.gnome.org/libnm/stable/index.html - doesn't match JS API
+
+-->
+<html>
+	<head>
+		<title></title>
+		<!--
+		<script type="application/javascript" src="//unpkg.com/vue@2.5.17/dist/vue.min.js"></script>
+		-->
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+		<link rel="stylesheet" href="loading.css"/>
+		<link rel="stylesheet" href="docs.css"/>
+
+		<style type="text/css">
+		</style>
+		<script type="text/x-template" id="class-docs-template">
+		<div><div v-for="(props, scope) in members" v-if="scope !== 'constants'">
+			<h3 style="text-transform: capitalize">
+				{{ scope }}
+			</h3>
+			<div v-for="(description, prop) in props">
+				<div v-if="scope === 'callbacks' || scope === 'functions' || scope === 'methods'">
+					<!--span class="code-result">{{ description.returns }}</span-->
+					<span
+						class="code-name">{{ scope !== 'callbacks' ? ns + '.' : '' }}.</span><span
+						class="code-name">{{ prop }}</span>
+					( <span v-for="(arg, index) in description.params" :class="'code-arg ' + (arg.optional ? 'optional' : '')">
+						{{ arg.name + (arg.null ? '?' : '') }} {{ description.params.length - index > 1 ? ',' : '' }}
+					</span> )
+				</div>
+				<div v-else-if="scope === 'flags' || scope === 'enums'">
+						<details>
+							<summary><span class="code-name">
+								{{ ns }}.{{ prop }}
+							</span></summary>
+							<span class="code-arg">
+								{{ JSON.stringify (description, null, "\t") }}
+							</span>
+						</details>
+
+					</div>
+				<div v-else>
+				{{ prop }}
+				{{ JSON.stringify (description) }}
+				</div>
+			</div>
+		</div></div>
+		</script>
+
+		<script type="text/x-template" id="docs-template">
+	<div class="contents">
+		<header>
+			<h1>GJS</h1>
+			<div :class="'lds-ellipsis ' + context.op"><div></div><div></div><div></div><div></div></div>
+		</header>
+		<aside>
+			<ul class="ns">
+				<li
+					v-for="namespace in ns.list"
+					:data-ns="namespace"
+					@click="loadDocsNS(namespace)"
+					:class="namespace === context.ns ? 'active' : ''">
+					<span>{{ namespace }}</span>
+				</li>
+			</ul>
+		</aside>
+		<aside>
+			<ul class="class">
+				<li
+					data-class=""
+					@click="displayClass('')"
+					:class="context.className === '' ? 'active' : ''"
+					v-show="context.ns">
+					<span>@</span>
+				</li>
+				<li
+					v-for="(props, className) in context.classes"
+					:data-class="className"
+					@click="displayClass(className)"
+					:class="className === context.className ? 'active' : ''">
+					<span>{{ className }}</span>
+				</li>
+			</ul>
+		</aside>
+		<main>
+			<class-docs v-if="context.className === ''" :members="context.members" :ns="context.ns"></class-docs>
+			<class-docs v-if="context.className !== ''" :members="context.classMembers" :ns="context.className"></class-docs>
+		</main>
+	</div>
+			</script>
+			<script type="text/x-template" id="section-template">
+				<div class="section">
+					<input :id="'section-' + id" type="checkbox" name="sections">
+					<label :for="'section-' + id" :title="name" :class="type">{{ name }}</label>
+					<div class="section-content">
+						<slot></slot>
+					</div>
+				</div>
+			</script>
+
+	</head>
+	<body>
+		<div id="docs-container">
+		</div>
+		<script src="vue.js" type="text/javascript"></script>
+	</body>
+</html>
