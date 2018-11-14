@@ -1,5 +1,5 @@
 const gi = imports.gi;
-const GIRepository = gi.GIRepository;
+const GIRepository = imports.gi.GIRepository;
 const InfoType = GIRepository.InfoType;
 const rep = GIRepository.Repository.get_default();
 
@@ -106,9 +106,61 @@ function walkThrough(nmsp, info, pkg) {
 }
 
 function getTypeInfo (typeInfo) {
+
   const type = typeInfo.get_type();
   // const gtype = GIRepository.registered_type_info_get_type_name (typeInfo);
-  if (type === 18 || type === 0) // TYPE_TYPE or INVALID
+  if (type === 18) { // TYPE_TYPE
+    const tag = GIRepository.type_info_get_tag(typeInfo);
+    let typeTag;
+    switch (tag) {
+      case 0:
+        typeTag = 'any';
+        break;
+      case 1:
+        typeTag = 'boolean';
+        break;
+      case ((tag > 0 && tag < 12) ? tag : -1):
+        typeTag = 'number';
+        break;
+      // case 12: // gtype
+      case 13: // utf8
+      case 14: // filename
+      case 21: // unichar
+        typeTag = 'string';
+        break;
+      
+      case 15: // array
+        typeTag = 'array';
+        GIRepository.type_info_get_array_type (typeInfo);
+        break;
+      case 16: // interface
+        const typeInterface = GIRepository.type_info_get_interface (typeInfo);
+        return {
+          name: typeInterface.get_name(),
+          ns: typeInterface.get_namespace(),
+          // isPointer: GIRepository.type_info_is_pointer(typeInfo),
+          type: typeInterface.get_type(),
+          isInterface: true
+        }
+      case 17:
+      case 18:
+      case 19:
+        const paramType = GIRepository.type_info_get_param_type(typeInfo, 0);
+        
+        return {
+          type: 'list',
+          items: [getTypeInfo (paramType)]
+        }
+      
+      default:
+        typeTag = GIRepository.type_tag_to_string(tag)
+    }
+    return {
+      type: typeTag,
+      isPointer: GIRepository.type_info_is_pointer(typeInfo),
+    }
+  }
+  if (type === 0) // TYPE_TYPE or INVALID
     return undefined;
   return {
     name: typeInfo.get_name(),
@@ -279,6 +331,11 @@ function fieldWalker(info) {
 
 function namespaceWalker(env, Namespace, pkg) {
   const nmsp = (env[Namespace] = {});
+  env[Namespace].deps = rep.get_dependencies(Namespace);
+  env[Namespace].immediate_deps = rep.get_immediate_dependencies(Namespace);
+  env[Namespace].versions = rep.enumerate_versions(Namespace);
+  env[Namespace].version = rep.get_version(Namespace);
+  
   const length = rep.get_n_infos(Namespace);
   for (let i = 0; i < length; i++) {
     walkThrough(nmsp, rep.get_info(Namespace, i), pkg);
